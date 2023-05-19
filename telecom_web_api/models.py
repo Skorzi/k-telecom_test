@@ -2,10 +2,19 @@ from django.db import models
 from django.core.validators import MinLengthValidator
 
 class Equipment(models.Model):
-    name = models.CharField(verbose_name='Наименование оборудования',
+    code = models.CharField(verbose_name='Код типа оборудования',
                             max_length=64, blank=True)
     sn_number = models.CharField(verbose_name='Серийный номер', max_length=10,
                 blank=False, validators=[MinLengthValidator(10)], unique=True)
+    
+    # Заготовки для мягкого удаления.
+    def soft_delete(self):
+        self.is_deleted = True
+        self.save()
+
+    def restore(self):
+        self.is_deleted = False
+        self.save()
 
 class Type_Of_Equipment(models.Model):
     name = models.CharField(verbose_name='Тип оборудования', max_length=64, 

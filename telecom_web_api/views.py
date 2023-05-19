@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
 from .serializers import EquipmentSerializer
 from .models import Equipment, Type_Of_Equipment
 from django.http import Http404
@@ -15,6 +16,8 @@ class GetOrCreateEquip(APIView):
         }
     # Получение всего оборудования
     def get(self, request):
+        # Получать список с query-параметрами
+        # Создавать объект, только если серийный номер совпадает с маской 
         equip = Equipment.objects.all()
         serializer = EquipmentSerializer(equip, many=True)
         return Response(serializer.data)
@@ -46,8 +49,11 @@ class GetEquipDetail(APIView):
         pass
 
     # Удаление записи по id
-    def delete(self, request):
-        pass
+    def delete(self, request, pk):
+        # Жесткое удаление, нужно сделать мягкое
+        equip_by_id = self.get_equip_by_id(pk)
+        equip_by_id.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class GetEquipType(APIView):
     # Получить список типов оборудования с query параметрами.
