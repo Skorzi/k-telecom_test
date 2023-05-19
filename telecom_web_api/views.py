@@ -5,33 +5,38 @@ from .serializers import EquipmentSerializer
 from .models import Equipment, Type_Of_Equipment
 # Create your views here.
 class GetOrCreateEquip(APIView):
-    def get_object(self, request, pk):
-        pass
 
+    # Получение всего оборудования
     def get(self, request):
         equip = Equipment.objects.all()
         serializer = EquipmentSerializer(equip, many=True)
         return Response(serializer.data)
     
+    # Создание нового оборудования
     def post(self, request):
-        #create a new equip
         serializer = EquipmentSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
-    def put(self, request):
-        #на редактирование записи по id
+
+class GetEquipDetail(APIView):
+    # Получение записи по id
+    def get_equip_by_id(self, pk):
         pass
 
+    # Редактирование записи по id
+    def put(self, request):
+        pass
+
+    # Удаление записи по id
     def delete(self, request):
-        #на удаление записи по id
         pass
 
 class GetEquipType(APIView):
+    # Получить список типов оборудования с query параметрами.
     def get(self, request):
-        # Получить список типов оборудования с query параметрами.
         pass
 
 
