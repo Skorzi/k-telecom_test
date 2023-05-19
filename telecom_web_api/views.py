@@ -4,8 +4,15 @@ from rest_framework.response import Response
 from .serializers import EquipmentSerializer
 from .models import Equipment, Type_Of_Equipment
 from django.http import Http404
+import string
 
 class GetOrCreateEquip(APIView):
+    sn = {'N': [i for i in range(10)], 
+          'A': [i for i in string.ascii_uppercase],
+          'a': [i for i in string.ascii_lowercase],
+          'X': [i for i in string.ascii_lowercase] + [i for i in string.digits],
+          'Z': ['-', '_', "@"]
+        }
     # Получение всего оборудования
     def get(self, request):
         equip = Equipment.objects.all()
@@ -35,7 +42,7 @@ class GetEquipDetail(APIView):
         return Response(serializer.data)
 
     # Редактирование записи по id
-    def put(self, request):
+    def put(self, request, pk):
         pass
 
     # Удаление записи по id
