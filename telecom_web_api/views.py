@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import EquipmentSerializer
+from .serializers import EquipmentSerializer, TypeOfEquipmentSerializer
 from .models import Equipment, Type_Of_Equipment
 from django.http import Http404
 import string
@@ -17,14 +17,19 @@ class GetOrCreateEquip(APIView):
     # Получение всего оборудования
     def get(self, request):
         # Получать список с query-параметрами
-        # Создавать объект, только если серийный номер совпадает с маской 
         equip = Equipment.objects.filter(is_deleted=False)
         serializer = EquipmentSerializer(equip, many=True)
         return Response(serializer.data)
     
     # Создание нового оборудования
     def post(self, request):
+        # Создавать объект, только если серийный номер совпадает с маской 
+        # Перенести логику валидации данных в функцию clean в моделях?
         serializer = EquipmentSerializer(data=request.data, many=True)
+        for i in request.data:
+            sn_numbers = i.get('sn_number')
+            print(list(sn_numbers))
+        
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=201)
@@ -69,6 +74,15 @@ class GetEquipDetail(APIView):
 class GetEquipType(APIView):
     # Получить список типов оборудования с query параметрами.
     def get(self, request):
-        pass
+        equip_type = Type_Of_Equipment.objects.all()
+        serializer = TypeOfEquipmentSerializer(equip_type, many=True)
+        return Response(serializer.data, status=201)
+
+    def post(self, request):
+        serializer = TypeOfEquipmentSerializer(data=request.data, many=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
 
 
