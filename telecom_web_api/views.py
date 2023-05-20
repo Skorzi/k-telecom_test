@@ -5,15 +5,10 @@ from rest_framework import status
 from .serializers import EquipmentSerializer, TypeOfEquipmentSerializer
 from .models import Equipment, Type_Of_Equipment
 from django.http import Http404
-import string
+import re
 
 class GetOrCreateEquip(APIView):
-    sn_shifer = {'N': r'^[0-9]+$',
-        'A': r'^[A-Z]+$',
-        'a': r'^[a-z]+$',
-        'X': r'^[A-Z0-9]+$',
-        'Z': r"^[-|_|@]+$"
-    }
+
     # Получение всего оборудования
     def get(self, request):
         # Получать список с query-параметрами
@@ -34,10 +29,33 @@ class GetOrCreateEquip(APIView):
     def post(self, request):
         # Создавать объект, только если серийный номер совпадает с маской 
         # Перенести логику валидации данных в функцию clean в моделях?
-        serializer = EquipmentSerializer(data=request.data, many=True)
+
+        sn_shifer = {'N': r'^[0-9]+$',
+            'A': r'^[A-Z]+$',
+            'a': r'^[a-z]+$',
+            'X': r'^[A-Z0-9]+$',
+            'Z': r"^[-|_|@]+$"
+        }
+        success = 0
+        for equip in request.data:
+        # Логика поиска нужного типа оборудования под серийный номер
+            types_of_equipment = Type_Of_Equipment.objects.all()
+            equip_sn = equip.get('sn_number')
+            for type_of_equipment in types_of_equipment:
+                for i in range(10):
+                    if re.match(sn_shifer[type_of_equipment.sn_mask[i]], equip_sn[i]):
+                        success += 1
+                    else:
+                        success = 0
+                        break
+
+
         # for i in request.data:
         #     sn_numbers = i.get('sn_number')
         #     print(list(sn_numbers))
+
+
+        serializer = EquipmentSerializer(data=request.data, many=True)
         
         if serializer.is_valid():
             serializer.save()
