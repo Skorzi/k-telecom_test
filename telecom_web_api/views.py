@@ -54,9 +54,8 @@ class GetEquipDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-    # Удаление записи по id
+    # Мягкое удаление записи по id
     def delete(self, request, pk):
-        # Жесткое удаление, нужно сделать мягкое
         equip_by_id = self.get_equip_by_id(pk)
         equip_by_id.soft_delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
