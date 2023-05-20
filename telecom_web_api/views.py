@@ -26,9 +26,9 @@ class GetOrCreateEquip(APIView):
         # Создавать объект, только если серийный номер совпадает с маской 
         # Перенести логику валидации данных в функцию clean в моделях?
         serializer = EquipmentSerializer(data=request.data, many=True)
-        for i in request.data:
-            sn_numbers = i.get('sn_number')
-            print(list(sn_numbers))
+        # for i in request.data:
+        #     sn_numbers = i.get('sn_number')
+        #     print(list(sn_numbers))
         
         if serializer.is_valid():
             serializer.save()

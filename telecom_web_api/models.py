@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MinLengthValidator
 from django.core.validators import RegexValidator
+import string
 
 class Type_Of_Equipment(models.Model):
     name = models.CharField(verbose_name='Тип оборудования', max_length=64, 
@@ -14,10 +15,6 @@ class Type_Of_Equipment(models.Model):
     
 class Equipment(models.Model):
 
-    # Использовать функцию валидации?
-    def validationSN(self):
-        pass
-
     code = models.CharField(verbose_name='Код типа оборудования',
                             max_length=64, blank=True)
     sn_number = models.CharField(verbose_name='Серийный номер', max_length=10,
@@ -30,6 +27,16 @@ class Equipment(models.Model):
     
     type_of_equipment = models.ForeignKey(Type_Of_Equipment, 
                                         on_delete=models.DO_NOTHING)
+    
+    def сlean(self):
+        sn_shifer = {'N': r'^[0-9]+$',
+            'A': r'^[A-Z]+$',
+            'a': r'^[a-z]+$',
+            'X': r'^[A-Z0-9]+$',
+            'Z': r"^[-|_|@]+$"
+        }
+
+        all_types = Type_Of_Equipment.objects.all()
     
     is_deleted = models.BooleanField(default=False)
     
