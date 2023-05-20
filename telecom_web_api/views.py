@@ -18,7 +18,7 @@ class GetOrCreateEquip(APIView):
     def get(self, request):
         # Получать список с query-параметрами
         # Создавать объект, только если серийный номер совпадает с маской 
-        equip = Equipment.objects.all()
+        equip = Equipment.objects.filter(is_deleted=False)
         serializer = EquipmentSerializer(equip, many=True)
         return Response(serializer.data)
     
@@ -52,8 +52,14 @@ class GetEquipDetail(APIView):
     def delete(self, request, pk):
         # Жесткое удаление, нужно сделать мягкое
         equip_by_id = self.get_equip_by_id(pk)
-        equip_by_id.delete()
+        equip_by_id.soft_delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    def restore(self, request, pk):
+        equip_by_id = self.get_equip_by_id(pk)
+        equip_by_id.restore()
+        serializer = EquipmentSerializer(equip_by_id)
+        return Response(serializer.data, status=201)
 
 class GetEquipType(APIView):
     # Получить список типов оборудования с query параметрами.

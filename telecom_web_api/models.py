@@ -7,6 +7,8 @@ class Equipment(models.Model):
     sn_number = models.CharField(verbose_name='Серийный номер', max_length=10,
                 blank=False, validators=[MinLengthValidator(10)], unique=True)
     
+    is_deleted = models.BooleanField(default=False)
+    
     # Заготовки для мягкого удаления.
     def soft_delete(self):
         self.is_deleted = True
