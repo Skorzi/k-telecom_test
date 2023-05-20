@@ -46,7 +46,13 @@ class GetEquipDetail(APIView):
 
     # Редактирование записи по id
     def put(self, request, pk):
-        pass
+        equip_by_id = self.get_equip_by_id(pk)
+        serializer = EquipmentSerializer(equip_by_id, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
     # Удаление записи по id
     def delete(self, request, pk):
