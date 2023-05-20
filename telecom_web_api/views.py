@@ -8,16 +8,25 @@ from django.http import Http404
 import string
 
 class GetOrCreateEquip(APIView):
-    sn = {'N': [i for i in range(10)], 
-          'A': [i for i in string.ascii_uppercase],
-          'a': [i for i in string.ascii_lowercase],
-          'X': [i for i in string.ascii_lowercase] + [i for i in string.digits],
-          'Z': ['-', '_', "@"]
-        }
+    sn_shifer = {'N': r'^[0-9]+$',
+        'A': r'^[A-Z]+$',
+        'a': r'^[a-z]+$',
+        'X': r'^[A-Z0-9]+$',
+        'Z': r"^[-|_|@]+$"
+    }
     # Получение всего оборудования
     def get(self, request):
         # Получать список с query-параметрами
         equip = Equipment.objects.filter(is_deleted=False)
+
+        code_query = request.query_params.get('code')
+        sn_number_query = request.query_params.get('sn_mask')
+
+        if code_query:
+            equip = equip.filter(code=code_query)
+        elif sn_number_query:
+            equip = equip.filter(sn_number=sn_number_query)
+            
         serializer = EquipmentSerializer(equip, many=True)
         return Response(serializer.data)
     
@@ -75,6 +84,15 @@ class GetEquipType(APIView):
     # Получить список типов оборудования с query параметрами.
     def get(self, request):
         equip_type = Type_Of_Equipment.objects.all()
+
+        name_query = request.query_params.get('name')
+        sn_mask_query = request.query_params.get('sn_mask')
+
+        if name_query:
+            equip_type = equip_type.filter(name=name_query)
+        elif sn_mask_query:
+            equip_type = equip_type.filter(sn_mask=sn_mask_query)
+
         serializer = TypeOfEquipmentSerializer(equip_type, many=True)
         return Response(serializer.data, status=201)
 
