@@ -45,6 +45,13 @@ class GetOrCreateEquip(APIView):
                 for i in range(10):
                     if re.match(sn_shifer[type_of_equipment.sn_mask[i]], equip_sn[i]):
                         success += 1
+                        if success == 10:
+                            request.data["type_of_equipment"] = type_of_equipment
+                            serializer = EquipmentSerializer(data=request.data, many=True)
+                            if serializer.is_valid():
+                                serializer.save()
+                                return Response(serializer.data, status=201)
+                            return Response(serializer.errors, status=400)
                     else:
                         success = 0
                         break
