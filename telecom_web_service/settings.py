@@ -79,8 +79,8 @@ DATABASES = {
     'default': { 
         'ENGINE': 'django.db.backends.mysql', 
         'NAME': 'equipment_db', 
-        'USER': 'root', 
-        'PASSWORD': 'Meiyo999666333', 
+        'USER': 'your_username', 
+        'PASSWORD': 'your_pswd', 
         'HOST': '127.0.0.1', 
         'PORT': '3306', 
         'OPTIONS': { 
