@@ -24,18 +24,9 @@ class Equipment(models.Model):
                             ]
                 )
     
-    type_of_equipment = models.ForeignKey(Type_Of_Equipment, 
-                                        on_delete=models.DO_NOTHING)
+    type_of_equipment = models.ForeignKey(Type_Of_Equipment, default=None, null=True,
+                                    blank=True, on_delete=models.DO_NOTHING)
     
-    # def сlean(self):
-    #     sn_shifer = {'N': r'^[0-9]+$',
-    #         'A': r'^[A-Z]+$',
-    #         'a': r'^[a-z]+$',
-    #         'X': r'^[A-Z0-9]+$',
-    #         'Z': r"^[-|_|@]+$"
-    #     }
-
-    #     all_types = Type_Of_Equipment.objects.all()
     
     is_deleted = models.BooleanField(default=False)
     

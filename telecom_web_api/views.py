@@ -11,7 +11,6 @@ class GetOrCreateEquip(APIView):
 
     # Получение всего оборудования
     def get(self, request):
-        # Получать список с query-параметрами
         equip = Equipment.objects.filter(is_deleted=False)
 
         code_query = request.query_params.get('code')
@@ -27,51 +26,12 @@ class GetOrCreateEquip(APIView):
     
     # Создание нового оборудования
     def post(self, request):
-        # Создавать объект, только если серийный номер совпадает с маской 
-        # Перенести логику валидации данных в функцию clean в моделях?
-
-        # Не хватило времени на создание логики на валидации серийного номера
-
-        # sn_shifer = {'N': r'^[0-9]+$',
-        #     'A': r'^[A-Z]+$',
-        #     'a': r'^[a-z]+$',
-        #     'X': r'^[A-Z0-9]+$',
-        #     'Z': r"^[-|_|@]+$"
-        # }
-        # success = 0
-        # for equip in request.data:
-        # # Логика поиска нужного типа оборудования под серийный номер
-        #     types_of_equipment = Type_Of_Equipment.objects.all()
-        #     equip_sn = equip.get('sn_number')
-        #     for type_of_equipment in types_of_equipment:
-        #         for i in range(10):
-        #             if re.match(sn_shifer[type_of_equipment.sn_mask[i]], equip_sn[i]):
-        #                 success += 1
-        #                 if success == 10:
-        #                     request.data["type_of_equipment"] = type_of_equipment
-        #                     serializer = EquipmentSerializer(data=request.data, many=True)
-        #                     if serializer.is_valid():
-        #                         serializer.save()
-        #                         return Response(serializer.data, status=201)
-        #                     return Response(serializer.errors, status=400)
-        #             else:
-        #                 success = 0
-        #                 break
-
-
-        # for i in request.data:
-        #     sn_numbers = i.get('sn_number')
-        #     print(list(sn_numbers))
-
-        
-        # обычное создание без проверок
-
+        for equip in request.data:
+            equip['type_of_equipment'] = None
         serializer = EquipmentSerializer(data=request.data, many=True)
-        
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
 class GetEquipDetail(APIView):
