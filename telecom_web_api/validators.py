@@ -33,11 +33,10 @@ def validate_sn_mask(value):
         else:
             raise ValidationError({"msg": "Использованы недопустимые символы"})
 
-    exists = Type_Of_Equipment.objects.filter(sn_mask=mask).exists()
+    exists = Type_Of_Equipment.objects.filter(sn_mask=mask)
     # type_of_equip = exists
     if not exists:
         raise ValidationError({"msg": "Нету подходящих масок"})
     
-    print(mask)
 
-    return mask
+    return exists[0]

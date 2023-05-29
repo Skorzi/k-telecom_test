@@ -6,9 +6,13 @@ class EquipmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Equipment
         fields = '__all__'
+        extra_kwargs = {
+            'type_of_equipment': {'required': False}
+        }
 
     def validate(self, args):
-        validate_sn_mask(args['sn_number'])
+        equipment_type_instance = validate_sn_mask(args['sn_number'])
+        args['type_of_equipment'] = equipment_type_instance
         return super().validate(args)
 
 class TypeOfEquipmentSerializer(serializers.ModelSerializer):
